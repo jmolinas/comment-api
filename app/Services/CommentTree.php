@@ -6,9 +6,11 @@ use App\Models\Comment;
 
 class CommentTree
 {
+    protected $recursive = 0;
+
     public function __construct(Comment $comment)
     {
-        $this->comments = $comment->get()->toArray();
+        $this->comments = $comment->get();
     }
 
     /**
@@ -28,31 +30,13 @@ class CommentTree
         return false;
     }
 
-    /**
-     * Build html tree
-     *
-     * @param array $rows
-     * @param null|int $parent
-     *
-     * @return string
-     */
-    protected function tree(array $rows, $parent = null)
-    {
-        $result = [];
-        foreach ($rows as $row) {
-            if ($row['parent_id'] == $parent) {
-                $data = $row;
-                if ($this->hasChildren($rows, $row['id'])) {
-                    $data['children'] =  $this->tree($rows, $row['id']);
-                }
-                $result[] = $data;
-            }
-        }
-        return $result;
-    }
-
     public function buildTree()
     {
-        return $this->tree($this->comments);
+        $this->comments;
+        foreach ($this->comments as $comment) {
+            $comment->children = array_values($this->comments->where('parent_id', $comment->id)->all());
+        }
+        $this->comments = $this->comments->where('parent_id', '');
+        return $this->comments;
     }
 }

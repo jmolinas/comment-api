@@ -37,6 +37,6 @@ class CommentController extends Controller
    */
   public function collection(CommentTree $comment)
   {
-    return response()->json($comment->buildTree());
+    return response()->json(array_values($comment->buildTree()->toArray()));
   }
 }
